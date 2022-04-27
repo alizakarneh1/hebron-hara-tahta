@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/leaflet-search.css">
+        <link rel="stylesheet" href="css/leaflet-control-geocoder.Geocoder.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet-control-geocoder.Geocoder.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/leaflet-search.js"></script>
+        <script src="data/Building_0.js"></script>
+        <script src="data/basinborders_1.js"></script>
+        <script src="data/center_line_2.js"></script>
+        <script src="data/important_places_3.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var map = L.map('map', {
+            zoomControl:true, maxZoom:28, minZoom:1
+        })
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+            if (bounds_group.getLayers().length) {
+                map.fitBounds(bounds_group.getBounds());
+            }
+            map.setMaxBounds(map.getBounds());
+        }
+        function pop_Building_0(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Entity'] !== null ? autolinker.link(feature.properties['Entity'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Handle'] !== null ? autolinker.link(feature.properties['Handle'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Layer'] !== null ? autolinker.link(feature.properties['Layer'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrFrzn'] !== null ? autolinker.link(feature.properties['LyrFrzn'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrLock'] !== null ? autolinker.link(feature.properties['LyrLock'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrOn'] !== null ? autolinker.link(feature.properties['LyrOn'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrVPFrzn'] !== null ? autolinker.link(feature.properties['LyrVPFrzn'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrHandle'] !== null ? autolinker.link(feature.properties['LyrHandle'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Color'] !== null ? autolinker.link(feature.properties['Color'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['EntColor'] !== null ? autolinker.link(feature.properties['EntColor'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrColor'] !== null ? autolinker.link(feature.properties['LyrColor'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BlkColor'] !== null ? autolinker.link(feature.properties['BlkColor'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Linetype'] !== null ? autolinker.link(feature.properties['Linetype'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['EntLinetyp'] !== null ? autolinker.link(feature.properties['EntLinetyp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrLnType'] !== null ? autolinker.link(feature.properties['LyrLnType'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BlkLinetyp'] !== null ? autolinker.link(feature.properties['BlkLinetyp'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Elevation'] !== null ? autolinker.link(feature.properties['Elevation'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Thickness'] !== null ? autolinker.link(feature.properties['Thickness'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LineWt'] !== null ? autolinker.link(feature.properties['LineWt'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['EntLineWt'] !== null ? autolinker.link(feature.properties['EntLineWt'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LyrLineWt'] !== null ? autolinker.link(feature.properties['LyrLineWt'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['BlkLineWt'] !== null ? autolinker.link(feature.properties['BlkLineWt'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['RefName'] !== null ? autolinker.link(feature.properties['RefName'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LTScale'] !== null ? autolinker.link(feature.properties['LTScale'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ExtX'] !== null ? autolinker.link(feature.properties['ExtX'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ExtY'] !== null ? autolinker.link(feature.properties['ExtY'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['ExtZ'] !== null ? autolinker.link(feature.properties['ExtZ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DocName'] !== null ? autolinker.link(feature.properties['DocName'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DocPath'] !== null ? autolinker.link(feature.properties['DocPath'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DocType'] !== null ? autolinker.link(feature.properties['DocType'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DocVer'] !== null ? autolinker.link(feature.properties['DocVer'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DocUpdate'] !== null ? autolinker.link(feature.properties['DocUpdate'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['DocId'] !== null ? autolinker.link(feature.properties['DocId'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Shape_Area</th>\
+                        <td>' + (feature.properties['Shape_Area'] !== null ? autolinker.link(feature.properties['Shape_Area'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Building_0_0() {
+            return {
+                pane: 'pane_Building_0',
+                opacity: 1,
+                color: 'rgba(243,198,198,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 1, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(131,103,101,0.5294117647058824)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Building_0');
+        map.getPane('pane_Building_0').style.zIndex = 400;
+        map.getPane('pane_Building_0').style['mix-blend-mode'] = 'normal';
+        var layer_Building_0 = new L.geoJson(json_Building_0, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Building_0',
+            layerName: 'layer_Building_0',
+            pane: 'pane_Building_0',
+            onEachFeature: pop_Building_0,
+            style: style_Building_0_0,
+        });
+        bounds_group.addLayer(layer_Building_0);
+        map.addLayer(layer_Building_0);
+        function pop_basinborders_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_basinborders_1_0() {
+            return {
+                pane: 'pane_basinborders_1',
+                opacity: 1,
+                color: 'rgba(0,0,0,1.0)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 2.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_basinborders_1');
+        map.getPane('pane_basinborders_1').style.zIndex = 401;
+        map.getPane('pane_basinborders_1').style['mix-blend-mode'] = 'normal';
+        var layer_basinborders_1 = new L.geoJson(json_basinborders_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_basinborders_1',
+            layerName: 'layer_basinborders_1',
+            pane: 'pane_basinborders_1',
+            onEachFeature: pop_basinborders_1,
+            style: style_basinborders_1_0,
+        });
+        bounds_group.addLayer(layer_basinborders_1);
+        map.addLayer(layer_basinborders_1);
+        function pop_center_line_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">tybe</th>\
+                        <td>' + (feature.properties['tybe'] !== null ? autolinker.link(feature.properties['tybe'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">length</th>\
+                        <td>' + (feature.properties['length'] !== null ? autolinker.link(feature.properties['length'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">name</th>\
+                        <td>' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_center_line_2_0(feature) {
+            switch(String(feature.properties['tybe'])) {
+                case 'main':
+                    return {
+                pane: 'pane_center_line_2',
+                opacity: 1,
+                color: 'rgba(251,154,153,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 4.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'sub-main':
+                    return {
+                pane: 'pane_center_line_2',
+                opacity: 1,
+                color: 'rgba(100,152,210,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 3.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+                case 'local':
+                    return {
+                pane: 'pane_center_line_2',
+                opacity: 1,
+                color: 'rgba(197,100,100,1.0)',
+                dashArray: '',
+                lineCap: 'round',
+                lineJoin: 'round',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_center_line_2');
+        map.getPane('pane_center_line_2').style.zIndex = 402;
+        map.getPane('pane_center_line_2').style['mix-blend-mode'] = 'normal';
+        var layer_center_line_2 = new L.geoJson(json_center_line_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_center_line_2',
+            layerName: 'layer_center_line_2',
+            pane: 'pane_center_line_2',
+            onEachFeature: pop_center_line_2,
+            style: style_center_line_2_0,
+        });
+        bounds_group.addLayer(layer_center_line_2);
+        map.addLayer(layer_center_line_2);
+        function pop_important_places_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">name</th>\
+                        <td>' + (feature.properties['name'] !== null ? autolinker.link(feature.properties['name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['tybe'] !== null ? autolinker.link(feature.properties['tybe'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_important_places_3_0(feature) {
+            switch(String(feature.properties['name'])) {
+                case 'Abd Al Aziz School':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/amenity_library.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Abu Al noor supermarket':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/shop=supermarket.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Abu Ali spah for wood':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/landuse_coniferous.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Abu Maiala For Tent':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/accommodation_bed_and_breakfast.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Abu Turki Supermarket':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/shop=supermarket.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al amer Furniture store':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/accommodation_bed_and_breakfast.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Farouq Mosque':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/place_of_worship_islamic3.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Helal Fuel Station':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/conveneince.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Mo\'minen Mosque':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/place_of_worship_islamic3.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Noor Mosque':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/place_of_worship_islamic3.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al rabea Furniture store':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/accommodation_bed_and_breakfast.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Rajabi Company For Heavy Materials':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/poi_mine.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Sabireen Mosque':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/place_of_worship_islamic3.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al safaa pharmacy':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/health_doctors.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Sha\'b Minimarket':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/shop=supermarket.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Al Zatary School':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/amenity_library.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Belal Mosque':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/place_of_worship_islamic3.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Copra for wheels':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/shopping_car_repair.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Elite center':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/shop=supermarket.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Ghaith Garage':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/shopping_car_repair.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'Palestine Kindergarten':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/amenity_library.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+                case 'TB Men Wears':
+                    return {
+                pane: 'pane_important_places_3',
+        rotationAngle: 0.0,
+        rotationOrigin: 'center center',
+        icon: L.icon({
+            iconUrl: 'markers/shopping_clothes.svg',
+            iconSize: [38.0, 38.0]
+        }),
+                interactive: true,
+            }
+                    break;
+            }
+        }
+        map.createPane('pane_important_places_3');
+        map.getPane('pane_important_places_3').style.zIndex = 403;
+        map.getPane('pane_important_places_3').style['mix-blend-mode'] = 'normal';
+        var layer_important_places_3 = new L.geoJson(json_important_places_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_important_places_3',
+            layerName: 'layer_important_places_3',
+            pane: 'pane_important_places_3',
+            onEachFeature: pop_important_places_3,
+            pointToLayer: function (feature, latlng) {
+                var context = {
+                    feature: feature,
+                    variables: {}
+                };
+                return L.marker(latlng, style_important_places_3_0(feature));
+            },
+        });
+        bounds_group.addLayer(layer_important_places_3);
+        map.addLayer(layer_important_places_3);
+        var osmGeocoder = new L.Control.Geocoder({
+            collapsed: true,
+            position: 'topleft',
+            text: 'Search',
+            title: 'Testing'
+        }).addTo(map);
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .className += ' fa fa-search';
+        document.getElementsByClassName('leaflet-control-geocoder-icon')[0]
+        .title += 'Search for a place';
+        var baseMaps = {};
+        L.control.layers(baseMaps,{'important_places<br /><table><tr><td style="text-align: center;"><img src="legend/important_places_3_AbdAlAzizSchool0.png" /></td><td>Abd Al Aziz School</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AbuAlnoorsupermarket1.png" /></td><td>Abu Al noor supermarket</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AbuAlispahforwood2.png" /></td><td>Abu Ali spah for wood</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AbuMaialaForTent3.png" /></td><td>Abu Maiala For Tent</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AbuTurkiSupermarket4.png" /></td><td>Abu Turki Supermarket</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlamerFurniturestore5.png" /></td><td>Al amer Furniture store</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlFarouqMosque6.png" /></td><td>Al Farouq Mosque</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlHelalFuelStation7.png" /></td><td>Al Helal Fuel Station</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlMominenMosque8.png" /></td><td>Al Mo\'minen Mosque</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlNoorMosque9.png" /></td><td>Al Noor Mosque</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlrabeaFurniturestore10.png" /></td><td>Al rabea Furniture store</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlRajabiCompanyForHeavyMaterials11.png" /></td><td>Al Rajabi Company For Heavy Materials</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlSabireenMosque12.png" /></td><td>Al Sabireen Mosque</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_Alsafaapharmacy13.png" /></td><td>Al safaa pharmacy</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlShabMinimarket14.png" /></td><td>Al Sha\'b Minimarket</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_AlZatarySchool15.png" /></td><td>Al Zatary School</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_BelalMosque16.png" /></td><td>Belal Mosque</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_Copraforwheels17.png" /></td><td>Copra for wheels</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_Elitecenter18.png" /></td><td>Elite center</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_GhaithGarage19.png" /></td><td>Ghaith Garage</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_PalestineKindergarten20.png" /></td><td>Palestine Kindergarten</td></tr><tr><td style="text-align: center;"><img src="legend/important_places_3_TBMenWears21.png" /></td><td>TB Men Wears</td></tr></table>': layer_important_places_3,'center_line<br /><table><tr><td style="text-align: center;"><img src="legend/center_line_2_main0.png" /></td><td>main</td></tr><tr><td style="text-align: center;"><img src="legend/center_line_2_submain1.png" /></td><td>sub-main</td></tr><tr><td style="text-align: center;"><img src="legend/center_line_2_local2.png" /></td><td>local</td></tr></table>': layer_center_line_2,'<img src="legend/basinborders_1.png" /> basin borders': layer_basinborders_1,'<img src="legend/Building_0.png" /> Building': layer_Building_0,}).addTo(map);
+        setBounds();
+        var i = 0;
+        layer_important_places_3.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['name'] !== null?String('<div style="color: #000000; font-size: 10pt; font-family: \'MS Shell Dlg 2\', sans-serif;">' + layer.feature.properties['name']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_important_places_3'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        map.addControl(new L.Control.Search({
+            layer: layer_important_places_3,
+            initial: false,
+            hideMarkerOnCollapse: true,
+            propertyName: 'name'}));
+        document.getElementsByClassName('search-button')[0].className +=
+         ' fa fa-binoculars';
+        resetLabels([layer_important_places_3]);
+        map.on("zoomend", function(){
+            resetLabels([layer_important_places_3]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_important_places_3]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_important_places_3]);
+        });
+        </script>
+    </body>
+</html>
